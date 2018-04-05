@@ -1,3 +1,3 @@
 # moon
 
-data processing library for lambo
+Data Processing and Prediction Library for lambo
