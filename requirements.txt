@@ -1,4 +1,2 @@
 numpy
-pymongo
-sshtunnel
-bson
+requests

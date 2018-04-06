@@ -14,7 +14,7 @@ class Predictor:
             for j in self.x:
                 if self.x[i] != j:
                     prod *= self.x[j] - self.x[i]
-            w[i] = 1.0/prod
+            w[i] = 1.0 / prod
         # evaluation at px
         pxn = 0
         pxd = 0
@@ -22,3 +22,18 @@ class Predictor:
             pxn += (w[i] * self.y[i]) / (px - (self.x[i]))
             pxd += (w[i]) / (px - (self.x[i]))
         return pxn / pxd
+
+
+class Sanitizer:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def sanitize(self):
+        sx = np.zeros((len(self.x)))
+        sy = np.zeros((len(self.y)))
+        for i in range(len(self.x)):
+            sx[i] = np.float64(float(self.x[i]))
+        for i in range(len(self.y)):
+            sy[i] = np.float64(float(self.y[i]))
+        return sx, sy

@@ -1,31 +1,33 @@
 #!/usr/bin/env python3
-import os
 from lambo import LamboClient
+from moon import Predictor, Sanitizer
 
 if __name__ == '__main__':
     # check if credential file exists else ask user for info
     try:
         credential = open('credential', 'r')
     except IOError:
-        SSH_USER = input('SSH_USER: ').strip()
-        SSH_PASS = input('SSH_PASS: ').strip()
-        MONGO_HOST = input('MONGO_HOST: (localhost) ').strip()
-        MONGO_PORT = input('MONGO_PORT: (27017) ').strip()
-
-        if len(MONGO_HOST) == 0:
-            MONGO_HOST = 'localhost'
-        if len(MONGO_PORT) < 1:
-            MONGO_PORT = '27017'
-        else:
-            MONGO_PORT = int(MONGO_PORT)
-
+        LAMBO_USER = input('LAMBO_USER: ').strip()
+        LAMBO_PASS = input('LAMBO_PASS: ').strip()
         store = input('Store in \'credential\'? (y/N) ')
         if store == 'y':
             credential = open('credential', 'w')
-            t = [SSH_USER, SSH_PASS, MONGO_HOST, MONGO_PORT]
+            t = [LAMBO_USER, LAMBO_PASS]
             credential.write(':'.join(t))
     else:
-        SSH_USER, SSH_PASS, MONGO_HOST, MONGO_PORT = credential.read().strip('\n').split(':')
-        MONGO_PORT = int(MONGO_PORT)
-    lc = LamboClient(SSH_USER, SSH_PASS, MONGO_HOST, MONGO_PORT)
-    print(lc.get_all_data())
+        LAMBO_USER, LAMBO_PASS = credential.read().strip('\n').split(':')
+    client = LamboClient(username=LAMBO_USER, password=LAMBO_PASS)
+    client.login()
+    t = client.data('Ethereum')
+    t = sorted(t, key=lambda k: int(k['last_updated']))
+    x = []
+    y = []
+    for i in range(len(t)):
+        t[i]['last_updated'] = i + 1
+        x.append(t[i]['last_updated'])
+        y.append(t[i]['price_usd'])
+    x, y = Sanitizer(x, y).sanitize()
+    p = Predictor(x, y)
+    next =  p.lagrange_interpolate(len(t))
+    print(y[len(t)-1])
+    print(next)
