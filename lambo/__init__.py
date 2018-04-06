@@ -3,6 +3,7 @@ from sshtunnel import SSHTunnelForwarder
 from bson.json_util import dumps
 import json
 
+
 class LamboClient:
     def __init__(self, ssh_user, ssh_pass, mongo_host, mongo_port):
         if mongo_host != 'localhost':
