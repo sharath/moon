@@ -1,4 +1,31 @@
 #!/usr/bin/env python3
+import os
+from lambo import LamboClient
 
 if __name__ == '__main__':
-    print(1)
+    # check if credential file exists else ask user for info
+    try:
+        credential = open('credential', 'r')
+    except IOError:
+        SSH_USER = input('SSH_USER: ').strip()
+        SSH_PASS = input('SSH_PASS: ').strip()
+        MONGO_HOST = input('MONGO_HOST: (localhost) ').strip()
+        MONGO_PORT = input('MONGO_PORT: (27017) ').strip()
+
+        if len(MONGO_HOST) == 0:
+            MONGO_HOST = 'localhost'
+        if len(MONGO_PORT) < 1:
+            MONGO_PORT = '27017'
+        else:
+            MONGO_PORT = int(MONGO_PORT)
+
+        store = input('Store in \'credential\'? (y/N) ')
+        if store == 'y':
+            credential = open('credential', 'w')
+            t = [SSH_USER, SSH_PASS, MONGO_HOST, MONGO_PORT]
+            credential.write(':'.join(t))
+    else:
+        SSH_USER, SSH_PASS, MONGO_HOST, MONGO_PORT = credential.read().strip('\n').split(':')
+        MONGO_PORT = int(MONGO_PORT)
+    lc = LamboClient(SSH_USER, SSH_PASS, MONGO_HOST, MONGO_PORT)
+    print(lc.get_all_data())
