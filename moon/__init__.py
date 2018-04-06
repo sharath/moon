@@ -7,14 +7,15 @@ class Predictor:
         self.y = y
 
     def lagrange_interpolate(self, px):
-        w = []
+        # compute barycentric weights
+        w = np.zeros((1, len(self.x)))
         for i in range(len(self.x)):
-            sum = np.float64(1)
-            for j in range(len(self.x)):
-                if i != j:
-                    if self.x[i] != 0:
-                        sum *= (self.x[i])
-            w.append(np.float64(1.0 / sum))
+            prod = np.float64(1)
+            for j in self.x:
+                if self.x[i] != j:
+                    prod *= self.x[j] - self.x[i]
+            w[i] = 1.0/prod
+        # evaluation at px
         pxn = 0
         pxd = 0
         for i in range(len(self.x)):
