@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from lambo import LamboClient, Sanitizer
+from lambo import LamboClient
 from moon import Predictor
 
 if __name__ == '__main__':
@@ -17,6 +17,6 @@ if __name__ == '__main__':
     else:
         LAMBO_USER, LAMBO_PASS = credential.read().strip('\n').split(':')
     client = LamboClient(username=LAMBO_USER, password=LAMBO_PASS)
-    client.login()
-    x, y = client.pricetime('Ethereum')
-    print(x, y)
+    x, y = client.pricetime('Ethereum', n=5)
+    py = Predictor(x, y).lagrange_interpolate(len(x))
+    print(y[len(x)-1], py)
