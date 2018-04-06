@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from lambo import LamboClient
-from moon import Predictor, Sanitizer
+from lambo import LamboClient, Sanitizer
+from moon import Predictor
 
 if __name__ == '__main__':
     # check if credential file exists else ask user for info
@@ -18,16 +18,5 @@ if __name__ == '__main__':
         LAMBO_USER, LAMBO_PASS = credential.read().strip('\n').split(':')
     client = LamboClient(username=LAMBO_USER, password=LAMBO_PASS)
     client.login()
-    t = client.data('Ethereum')
-    t = sorted(t, key=lambda k: int(k['last_updated']))
-    x = []
-    y = []
-    for i in range(len(t)):
-        t[i]['last_updated'] = i + 1
-        x.append(t[i]['last_updated'])
-        y.append(t[i]['price_usd'])
-    x, y = Sanitizer(x, y).sanitize()
-    p = Predictor(x, y)
-    next =  p.lagrange_interpolate(len(t))
-    print(y[len(t)-1])
-    print(next)
+    x, y = client.pricetime('Ethereum')
+    print(x, y)
