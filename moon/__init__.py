@@ -1,1 +1,1 @@
-from moon import Predictor
+from moon.predictor import Predictor

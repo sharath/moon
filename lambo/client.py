@@ -1,6 +1,6 @@
 import json
 import requests
-from lambo import Sanitizer
+import lambo.sanitizer
 
 
 class LamboClient:
@@ -9,6 +9,7 @@ class LamboClient:
         self.password = password
         self.authkey = authkey
         self.host = host + ':' + str(port)
+        self.login()
 
     def register(self):
         payload = {'username': self.username, 'password': self.password}
@@ -34,12 +35,15 @@ class LamboClient:
             return data
         return None
 
-    def pricetime(self, name):
+    def pricetime(self, name, n=10):
         data = self.data(name)
         x = []
         y = []
         for i in range(len(data)):
             data[i]['last_updated'] = i + 1
-            x.append(data[i]['last_updated'])
-            y.append(data[i]['price_usd'])
-        return Sanitizer(x, y).sanitize()
+        data.reverse()
+        for i in range(len(data)):
+            if i < n:
+                x.append(data[i]['last_updated'])
+                y.append(data[i]['price_usd'])
+        return lambo.sanitizer.Sanitizer(x, y).sanitize()
